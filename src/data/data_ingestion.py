@@ -97,7 +97,7 @@ def main():
         # Load data from the specified URL
         df1 = load_data(data_url='D:\\vs code projects\\yt_comment_analyzer\\data\\external\\Data1.csv')
         df2 = load_data(data_url='D:\\vs code projects\\yt_comment_analyzer\\data\\external\\Data2.csv')
-        
+        df2.rename(columns={'clean_text': 'clean_comment'}, inplace=True)
         # Combine the datasets
         df = pd.concat([df1, df2], axis=0)
         

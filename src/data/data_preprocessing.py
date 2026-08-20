@@ -1,5 +1,3 @@
-# src/data/data_preprocessing.py
-
 import numpy as np
 import pandas as pd
 import os
@@ -75,7 +73,7 @@ def normalize_text(df):
 def save_data(train_data: pd.DataFrame, test_data: pd.DataFrame, data_path: str) -> None:
     """Save the processed train and test datasets."""
     try:
-        interim_data_path = os.path.join(data_path, 'interim')
+        interim_data_path = os.path.join(data_path, 'preprocessed')
         logger.debug(f"Creating directory {interim_data_path}")
         
         os.makedirs(interim_data_path, exist_ok=True)  # Ensure the directory is created

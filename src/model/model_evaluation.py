@@ -12,6 +12,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import json
 from mlflow.models import infer_signature
+import dagshub
 
 # logging configuration
 logger = logging.getLogger('model_evaluation')
@@ -109,25 +110,22 @@ def log_confusion_matrix(cm, dataset_name):
     mlflow.log_artifact(cm_file_path)
     plt.close()
 
-def save_model_info(run_id: str, model_path: str, file_path: str) -> None:
-    """Save the model run ID and path to a JSON file."""
+def save_model_info(model_uri: str, model_path: str, file_path: str) -> None:
+    """Save the model model_uri and path to a JSON file."""
     try:
-        # Create a dictionary with the info you want to save
-        model_info = {
-            'run_id': run_id,
-            'model_path': model_path
-        }
-        # Save the dictionary as a JSON file
-        with open(file_path, 'w') as file:
+         model_info = {'model_uri': model_uri, 'model_path': model_path}
+         with open(file_path, 'w') as file:
             json.dump(model_info, file, indent=4)
-        logger.debug('Model info saved to %s', file_path)
+         logger.debug('Model info saved to %s', file_path)
     except Exception as e:
-        logger.error('Error occurred while saving the model info: %s', e)
-        raise
+         logger.error('Error occurred while saving the model info: %s', e)
+         raise
 
 
 def main():
-    mlflow.set_tracking_uri("http://ec2-54-196-109-131.compute-1.amazonaws.com:5000/")
+    
+    dagshub.init(repo_owner='Sovith07', repo_name='yt_comment_analyzer', mlflow=True)
+    mlflow.set_tracking_uri("https://dagshub.com/Sovith07/yt_comment_analyzer.mlflow")
 
     mlflow.set_experiment('dvc-pipeline-runs')
     
@@ -142,33 +140,27 @@ def main():
                 mlflow.log_param(key, value)
             
             # Load model and vectorizer
-            model = load_model(os.path.join(root_dir, 'lgbm_model.pkl'))
+            model = load_model(os.path.join(root_dir, 'stack_model.pkl'))
             vectorizer = load_vectorizer(os.path.join(root_dir, 'tfidf_vectorizer.pkl'))
 
             # Load test data for signature inference
-            test_data = load_data(os.path.join(root_dir, 'data/interim/test_processed.csv'))
+            test_data = load_data(os.path.join(root_dir, 'data/preprocessed/test_processed.csv'))
+            test_data['category'] = test_data['category'].astype(int).map({-1: 2, 0: 0, 1: 1})
+            test_data = test_data.dropna(subset=['category'])
 
             # Prepare test data
             X_test_tfidf = vectorizer.transform(test_data['clean_comment'].values)
             y_test = test_data['category'].values
 
-            # Create a DataFrame for signature inference (using first few rows as an example)
-            input_example = pd.DataFrame(X_test_tfidf.toarray()[:5], columns=vectorizer.get_feature_names_out())  # <--- Added for signature
-
-            # Infer the signature
-            signature = infer_signature(input_example, model.predict(X_test_tfidf[:5]))  # <--- Added for signature
-
-            # Log model with signature
-            mlflow.sklearn.log_model(
-                model,
-                "lgbm_model",
-                signature=signature,  # <--- Added for signature
-                input_example=input_example  # <--- Added input example
-            )
-
+            
+             # Log model to MLflow
+            
+            model_info=mlflow.sklearn.log_model(model,name="stack_model", serialization_format="pickle")
+            
             # Save model info
-            model_path = "lgbm_model"
-            save_model_info(run.info.run_id, model_path, 'experiment_info.json')
+            save_model_info(model_info.model_uri, "model", 'experiment_info.json')
+            print(model_info.model_id)
+            print(model_info.model_uri)
 
             # Log the vectorizer as an artifact
             mlflow.log_artifact(os.path.join(root_dir, 'tfidf_vectorizer.pkl'))
@@ -189,7 +181,7 @@ def main():
             log_confusion_matrix(cm, "Test Data")
 
             # Add important tags
-            mlflow.set_tag("model_type", "LightGBM")
+            mlflow.set_tag("model_type", "Stack")
             mlflow.set_tag("task", "Sentiment Analysis")
             mlflow.set_tag("dataset", "YouTube Comments")
 

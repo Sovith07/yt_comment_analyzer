@@ -168,16 +168,18 @@ def main():
         subsample = params['model_building']['subsample']
 
         # Load the preprocessed training data from the interim directory
-        train_data = load_data(os.path.join(root_dir, 'data/interim/train_processed.csv'))
+        train_data = load_data(os.path.join(root_dir, 'data/preprocessed/train_processed.csv'))
+        train_data['category'] = train_data['category'].astype(int).map({-1: 2, 0: 0, 1: 1})
+        train_data = train_data.dropna(subset=['category'])
 
         # Apply TF-IDF feature engineering on training data
         X_train_tfidf, y_train = apply_tfidf(train_data, max_features, ngram_range)
 
         # Train the LightGBM model using hyperparameters from params.yaml
-        best_model = train_model(X_train_tfidf, y_train, reg_alpha, reg_lambda, learning_rate, max_depth, n_estimators, num_leaves, min_child_samples, colsample_bytree, subsample)
+        model = train_model(X_train_tfidf, y_train, reg_alpha, reg_lambda, learning_rate, max_depth, n_estimators, num_leaves, min_child_samples, colsample_bytree, subsample)
 
         # Save the trained model in the root directory
-        save_model(best_model, os.path.join(root_dir, 'lgbm_model.pkl'))
+        save_model(model, os.path.join(root_dir, 'stack_model.pkl'))
 
     except Exception as e:
         logger.error('Failed to complete the feature engineering and model building process: %s', e)

@@ -4,9 +4,11 @@ import json
 import mlflow
 import logging
 import os
+import dagshub
 
+dagshub.init(repo_owner='Sovith07', repo_name='yt_comment_analyzer', mlflow=True)
 # Set up MLflow tracking URI
-mlflow.set_tracking_uri("http://ec2-54-196-109-131.compute-1.amazonaws.com:5000/")
+mlflow.set_tracking_uri("https://dagshub.com/Sovith07/yt_comment_analyzer.mlflow")
 
 
 # logging configuration
@@ -43,7 +45,7 @@ def load_model_info(file_path: str) -> dict:
 def register_model(model_name: str, model_info: dict):
     """Register the model to the MLflow Model Registry."""
     try:
-        model_uri = f"runs:/{model_info['run_id']}/{model_info['model_path']}"
+        model_uri = model_info['model_uri']
         
         # Register the model
         model_version = mlflow.register_model(model_uri, model_name)

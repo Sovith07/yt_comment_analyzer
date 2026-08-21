@@ -6,9 +6,10 @@ model_building:
   reg_alpha: 0.01215570124339254
   reg_lambda: 0.07146814041554751
   learning_rate: 0.03721005633871337
-  n_estimators: 997,
-  max_depth: 9,
-  num_leaves: 133,
-  min_child_samples: 31,
-  colsample_bytree: 0.9234118017408489,
+  n_estimators: 997
+  max_depth: 9
+  num_leaves: 133
+  min_child_samples: 31
+  colsample_bytree: 0.9234118017408489
   subsample: 0.8740422770140972
+  max_features: 10000

@@ -1,0 +1,5 @@
+[core]
+    remote = s3remote
+['remote "s3remote"']
+    url = s3://yt-cmmt-analyzer/dvcstore
+    access_key_id = AKIAZBUZ6XAW3S4XHA4F

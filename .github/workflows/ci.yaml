@@ -27,19 +27,14 @@ jobs:
         run: |
           pip install -r requirements.txt
 
-     
-
-      - name: Configure DVC remote credentials
-        env:
-          DAGSHUB_PAT: ${{ secrets.DAGSHUB_PAT }}
+      - name: Configure AWS credentials
         run: |
-          dvc remote modify origin --local auth basic
-          dvc remote modify origin --local user Sovith07
-          dvc remote modify origin --local password "$DAGSHUB_PAT"
+          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
       - name: Pull DVC data
         run: |
-          dvc pull -r origin
+          dvc pull -r s3remote -v
 
       - name: Run pipeline
         env:

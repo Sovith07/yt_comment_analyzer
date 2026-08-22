@@ -39,6 +39,7 @@ jobs:
         run: |
           dvc remote modify s3remote access_key_id "${{ secrets.AWS_ACCESS_KEY_ID }}" --local
           dvc remote modify s3remote secret_access_key "${{ secrets.AWS_SECRET_ACCESS_KEY }}" --local
+          dvc remote modify s3remote region "eu-north-1" --local
           dvc pull -v
 
       - name: Run pipeline

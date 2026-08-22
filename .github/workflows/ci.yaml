@@ -27,12 +27,6 @@ jobs:
         run: |
           pip install -r requirements.txt
 
-      - name: Configure DVC remote credentials
-        run: |
-          dvc remote modify origin --local auth basic
-          dvc remote modify origin --local user Sovith07
-          dvc remote modify origin --local password ${{ secrets.DAGSHUB_PAT }}
-
       - name: Pull DVC data
         env:
           DAGSHUB_PAT: ${{ secrets.DAGSHUB_PAT }}

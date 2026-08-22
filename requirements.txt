@@ -179,3 +179,4 @@ wordcloud
 yarl
 zc.lockfile
 zipp
+dvc-s3

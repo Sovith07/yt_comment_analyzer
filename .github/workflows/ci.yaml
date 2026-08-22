@@ -36,11 +36,9 @@ jobs:
           echo "Secret key length: ${#AWS_SECRET_ACCESS_KEY}"
 
       - name: Pull DVC data
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: eu-north-1
         run: |
+          dvc remote modify s3remote access_key_id "${{ secrets.AWS_ACCESS_KEY_ID }}" --local
+          dvc remote modify s3remote secret_access_key "${{ secrets.AWS_SECRET_ACCESS_KEY }}" --local
           dvc pull -v
 
       - name: Run pipeline

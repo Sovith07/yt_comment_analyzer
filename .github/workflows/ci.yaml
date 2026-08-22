@@ -13,7 +13,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.10'
+          python-version: '3.11'
 
       - name: Cache pip dependencies
         uses: actions/cache@v3
@@ -27,8 +27,20 @@ jobs:
         run: |
           pip install -r requirements.txt
 
+      - name: Configure DVC remote credentials
+        run: |
+          dvc remote modify origin --local auth basic
+          dvc remote modify origin --local user Sovith07
+          dvc remote modify origin --local password ${{ secrets.DAGSHUB_PAT }}
+
+      - name: Pull DVC data
+        env:
+          DAGSHUB_PAT: ${{ secrets.DAGSHUB_PAT }}
+        run: |
+          dvc pull
+
       - name: Run pipeline
-        env:      
-         DAGSHUB_PAT: ${{ secrets.DAGSHUB_PAT }}
+        env:
+          DAGSHUB_PAT: ${{ secrets.DAGSHUB_PAT }}
         run: |
           dvc repro

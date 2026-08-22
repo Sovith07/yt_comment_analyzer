@@ -94,7 +94,7 @@ def main():
         params = load_params(params_path='params.yaml')
         test_size = params['data_ingestion']['test_size']
         
-        # Load data from the specified URL
+        
         df1 = load_data(data_url=r'D:\vs code projects\yt_comment_analyzer\data\external\Data1.csv')
         df2 = load_data(data_url=r'D:\vs code projects\yt_comment_analyzer\data\external\Data2.csv')
         df2.rename(columns={'clean_text': 'clean_comment'}, inplace=True)

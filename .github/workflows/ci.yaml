@@ -27,10 +27,7 @@ jobs:
         run: |
           pip install -r requirements.txt
 
-      - name: Debug secret length
-        run: echo "PAT length: ${#DAGSHUB_PAT}"
-        env:
-          DAGSHUB_PAT: ${{ secrets.DAGSHUB_PAT }}
+     
 
       - name: Configure DVC remote credentials
         env:
